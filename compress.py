@@ -1,6 +1,8 @@
 import os
 from PIL import Image
 
+cat_path="./gifs/cat/"
+
 # VGG16 input size...
 compressionSize = 224, 224
 
@@ -31,14 +33,14 @@ def gen_frames(im, name):
 
 for i in range(0, 102068):
     ii = str(i)
-    if os.path.isfile('./gifs/' + ii + '.gif'):
+    if os.path.isfile(cat_path + ii + '.gif'):
         print i
         try:
-            os.mkdir('./gifs/' + ii)
-            im = Image.open('./gifs/' + ii + '.gif')
-            gen_frames(im, './gifs/' + ii + '/' + ii)
+            os.mkdir(cat_path + ii)
+            im = Image.open(cat_path + ii + '.gif')
+            gen_frames(im, cat_path + ii + '/' + ii)
         except Exception:
             continue
         im.close()
         if removeProcessedGifs:
-            os.remove('./gifs/' + ii + '.gif')
+            os.remove(cat_path + ii + '.gif')

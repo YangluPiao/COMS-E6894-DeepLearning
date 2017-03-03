@@ -61,7 +61,7 @@ def main():
     i = 0
     for gif in gifs:
         gif_ids.append(gif.id)
-        urllib.urlretrieve(gif.original.url, file_dir + '/' + gif.id + '.gif')
+        urllib.urlretrieve(gif.original.url, file_dir + '/' + str(i) + '.gif')
         # giphy.translate(gif)
         i = i + 1
         print 'GIF ' + str(i) + ' of '+ gifs_len + ' downloaded'
