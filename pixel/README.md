@@ -1,8 +1,6 @@
 # Pixel Recursive Super Resolution
 
-TensorFlow implementation of [Pixel Recursive Super Resolution](https://arxiv.org/abs/1702.00783). This implementation contains:
-
-![model](./assets/model.png)
+TensorFlow implementation of [Pixel Recursive Super Resolution](https://arxiv.org/abs/1702.00783). 
 
 ## Requirements
 
@@ -21,29 +19,15 @@ First, download data [celebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)
 
 Then, create image_list file:
 
-	$ python tools/create_img_lists.py --dataset=data/celebA --outfile=data/train.txt
+	$ python /create_img_lists.py --dataset=data/celebA --outfile=data/train.txt
 
 To train model on gpu:
 
-	$ python tools/train.py
+	$ python /train.py
 	(or $ python tools/train.py --device_id=0)
 
 To train model on cpu:
-	$ python tools/train.py --use_gpu=False
-
-## Samples
-
-Training after 30000 iteration.
-
-![sample.png](./assets/sample.png)
-
-
-## Training details
-
-cross entropy loss:
-
-![curve.png](./assets/curve.png)
-
+	$ python /train.py --use_gpu=False
 
 ## Author
 
