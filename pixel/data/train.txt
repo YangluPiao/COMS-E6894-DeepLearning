@@ -1,0 +1,12 @@
+/home/pyl/Desktop/pixel/data/celebA/000082.jpg
+/home/pyl/Desktop/pixel/data/celebA/000019.jpg
+/home/pyl/Desktop/pixel/data/celebA/000074.jpg
+/home/pyl/Desktop/pixel/data/celebA/000002.jpg
+/home/pyl/Desktop/pixel/data/celebA/000058.jpg
+/home/pyl/Desktop/pixel/data/celebA/000109.jpg
+/home/pyl/Desktop/pixel/data/celebA/000090.jpg
+/home/pyl/Desktop/pixel/data/celebA/000094.jpg
+/home/pyl/Desktop/pixel/data/celebA/000034.jpg
+/home/pyl/Desktop/pixel/data/celebA/000069.jpg
+/home/pyl/Desktop/pixel/data/celebA/000106.jpg
+/home/pyl/Desktop/pixel/data/celebA/000087.jpg
