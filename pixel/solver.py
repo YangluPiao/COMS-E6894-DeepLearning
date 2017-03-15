@@ -13,6 +13,7 @@ import time
 
 flags = tf.app.flags
 conf = flags.FLAGS
+
 class Solver(object):
   def __init__(self):
     self.device_id = conf.device_id
@@ -42,7 +43,7 @@ class Solver(object):
       optimizer = tf.train.RMSPropOptimizer(learning_rate, decay=0.95, momentum=0.9, epsilon=1e-8)
       self.train_op = optimizer.minimize(self.net.loss, global_step=self.global_step)
   def train(self):
-    init_op = tf.global_variables_initializer()
+    init_op = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
     summary_op = tf.summary.merge_all()
     saver = tf.train.Saver()
     # Create a session for running operations in the Graph.
@@ -58,18 +59,23 @@ class Solver(object):
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
     iters = 0
+    epoch = 0.0
     try:
-        while not coord.should_stop():
+        while not coord.should_stop() and epoch<=conf.num_epoch:
             # Run training steps or whatever
             t1 = time.time()
             _, loss = sess.run([self.train_op, self.net.loss], feed_dict={self.net.train: True})
             t2 = time.time()
             print('step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)' % ((iters, loss, self.batch_size/(t2-t1), (t2-t1))))
             iters += 1
+            batch=conf.batch_size
+            length=conf.dataset_size
+            epoch=iters/(length//batch)+1.0
             if iters % 10 == 0:
               summary_str = sess.run(summary_op, feed_dict={self.net.train: True})
               summary_writer.add_summary(summary_str, iters)
-            if iters % 1000 == 0:
+            if epoch.is_integer():
+              print("current epoch:",epoch)
               #self.sample(sess, mu=1.0, step=iters)
               self.sample(sess, mu=1.1, step=iters)
               #self.sample(sess, mu=100, step=iters)
