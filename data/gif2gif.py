@@ -32,10 +32,10 @@ def images2gif():
     for i in range(len(gif_path)):
         print("Recovering %d.gif"%(i))
         png_path=split_path+str(i)+"/"
-        png_path=glob.glob(png_path+"*.png")
-        png_path.sort(key=lambda f: int(filter(str.isdigit, f)))
+        pngList=glob.glob(png_path+"*.png")
+        pngList.sort(key=lambda f: int(filter(str.isdigit, f)))
         original_gif=gif_path[i]
-        png2gif(png_path,recovered_path,original_gif,i)
+        png2gif(pngList,recovered_path,original_gif,i)
     print "Donw with merging." 
 if __name__ == '__main__':
     gif2images()
