@@ -1,11 +1,6 @@
 import os,sys
 from PIL import Image
 
-split_path=sys.argv[1]
-
-# VGG16 input size...
-compressionSize = 224, 224
-
 # Delete a gif once it's been split into frames
 removeProcessedGifs = False
 
@@ -24,23 +19,26 @@ def iter_frames(im):
     except EOFError:
         pass
 
-def gen_frames(im, name):
+def gen_frames(im, name,compressionSize):
     for i, frame in enumerate(iter_frames(im)):
-        x = (name + '_%d.png') % i
-        frame.thumbnail(compressionSize, Image.ANTIALIAS)
-        frame.save(x, optimize=True, quality=100, **frame.info)
+        x = (name + '%d') % i
+        # frame.thumbnail(tuple([compressionSize*x for x in frame.info['size']]), Image.ANTIALIAS)
+        frame.thumbnail(tuple(compressionSize*x for x in frame.size), Image.ANTIALIAS)
+        # frame.convert("RGBA").save(x+".jpg", optimize=True, quality=100, **frame.info)
+        frame.save(x+".png", optimize=True, quality=100, **frame.info)
         frame.close()
 
-for i in range(0, 102068):
-    ii = str(i)
-    if os.path.isfile(split_path + ii + '.gif'):
-        print i
-        try:
-            os.mkdir(split_path + ii)
-            im = Image.open(split_path + ii + '.gif')
-            gen_frames(im, split_path + ii + '/' + ii)
-        except Exception:
-            continue
-        im.close()
-        if removeProcessedGifs:
-            os.remove(split_path + ii + '.gif')
+def split(split_path,compressionSize):
+    for i in range(0, 102068):
+        ii = str(i)
+        if os.path.isfile(split_path + ii + '.gif'):
+            print i
+            try:
+                os.mkdir(split_path + ii)
+                im = Image.open(split_path + ii + '.gif')
+                gen_frames(im, split_path + ii + '/' + ii,compressionSize)
+            except Exception:
+                continue
+            im.close()
+            if removeProcessedGifs:
+                os.remove(split_path + ii + '.gif')
