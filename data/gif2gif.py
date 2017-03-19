@@ -5,7 +5,7 @@ import shutil
 import glob
 
 compressSize=1
-tag="face"
+tag="cat"
 recovered_path="recovered_gifs_"+tag
 
 split_path="./gifs/"+tag+"/"
