@@ -70,12 +70,12 @@ class Solver(object):
             iters += 1
             batch=conf.batch_size
             length=conf.dataset_size
-            epoch=iters/(length//batch)+1.0
+            # epoch=iters/(length//batch)+1.0
             if iters % 10 == 0:
               summary_str = sess.run(summary_op, feed_dict={self.net.train: True})
               summary_writer.add_summary(summary_str, iters)
             if epoch.is_integer():
-              print("current epoch:",epoch)
+              # print("current epoch:",epoch)
               #self.sample(sess, mu=1.0, step=iters)
               self.sample(sess, mu=1.1, step=iters)
               #self.sample(sess, mu=100, step=iters)
