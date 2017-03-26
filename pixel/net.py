@@ -6,6 +6,11 @@ import tensorflow as tf
 import numpy as np
 from ops import *
 
+flags = tf.app.flags
+conf = flags.FLAGS
+sz_hr = 32
+sz_lr= 8
+
 class Net(object):
   def __init__(self, hr_images, lr_images, scope):
     """
@@ -14,7 +19,7 @@ class Net(object):
       lr_images: [batch_size, lr_height, lr_width, in_channels] float32
     """
     with tf.variable_scope(scope) as scope:
-      self.train = tf.placeholder(tf.bool)
+      self.train = tf.placeholder(tf.bool, name="netTrainBool")
       self.construct_net(hr_images, lr_images)
   def prior_network(self, hr_images):
     """

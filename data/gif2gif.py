@@ -4,8 +4,9 @@ import os
 import shutil
 from PIL import Image
 
+compression = 0.3
 
-tag="cat"
+tag="dog"
 recovered_path="recovered_gifs_"+tag
 
 split_path="./gifs/"+tag+"/"
@@ -20,7 +21,8 @@ def gif2images():
 	for idx, gif in enumerate(gif_path):
 		print("Splitting %d.gif with tag '%s'"%(idx,tag))
 		# May need to modify the path.
-		call(["convert",gif_path[idx],"gifs/"+tag+"/"+str(idx)+"/%05d.png"])
+		# call(["convert",gif_path[idx],"gifs/"+tag+"/"+str(idx)+"/%05d.png"])
+		call(["convert",gif_path[idx],"../pixel/"+tag+"_data/"+str(idx)+"%03d.png"])
 	print "Done with splitting." 
 def images2gif():
 	if os.path.exists(recovered_path):
@@ -42,4 +44,4 @@ def images2gif():
 	print "Done with recovering." 
 if __name__ == '__main__':
 	gif2images()
-	images2gif()
+	# images2gif()

@@ -4,6 +4,10 @@ from __future__ import print_function
 
 import tensorflow as tf
 
+flags = tf.app.flags
+conf = flags.FLAGS
+sz_hr = 32
+sz_lr= 8
 class DataSet(object):
   def __init__(self, images_list_path, num_epoch, batch_size):
     # filling the record_list
@@ -17,10 +21,10 @@ class DataSet(object):
     _, image_file = image_reader.read(filename_queue)
     
     # image_file = tf.placeholder(dtype=tf.string)
-    image = tf.image.decode_jpeg(image_file, 3)
+    image = tf.image.decode_png(image_file, 3)
     #preprocess
-    hr_image = tf.image.resize_images(image, [32, 32])
-    lr_image = tf.image.resize_images(image, [8, 8])
+    hr_image = tf.image.resize_images(image, [sz_hr, sz_hr])
+    lr_image = tf.image.resize_images(image, [sz_lr, sz_lr])
     hr_image = tf.cast(hr_image, tf.float32)
     lr_image = tf.cast(lr_image, tf.float32)
     #

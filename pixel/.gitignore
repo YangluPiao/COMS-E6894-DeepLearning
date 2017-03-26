@@ -1,3 +1,4 @@
 *.pyc
-samples/*
-models/*
+samples*/
+models*/
+*_data/
