@@ -61,6 +61,7 @@ class Solver(object):
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
     iters = 0
     try:
+<<<<<<< HEAD
       while not coord.should_stop():
         # Run training steps or whatever
         t1 = time.time()
@@ -78,6 +79,29 @@ class Solver(object):
         if iters % 10000 == 0:
           checkpoint_path = os.path.join(self.train_dir, 'model.ckpt')
           saver.save(sess, checkpoint_path, global_step=iters)
+=======
+        while not coord.should_stop() and epoch<=conf.num_epoch:
+            # Run training steps or whatever
+            t1 = time.time()
+            _, loss = sess.run([self.train_op, self.net.loss], feed_dict={self.net.train: True})
+            t2 = time.time()
+            print('step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)' % ((iters, loss, self.batch_size/(t2-t1), (t2-t1))))
+            iters += 1
+            batch=conf.batch_size
+            length=conf.dataset_size
+            # epoch=iters/(length//batch)+1.0
+            if iters % 10 == 0:
+              summary_str = sess.run(summary_op, feed_dict={self.net.train: True})
+              summary_writer.add_summary(summary_str, iters)
+            if epoch.is_integer():
+              # print("current epoch:",epoch)
+              #self.sample(sess, mu=1.0, step=iters)
+              self.sample(sess, mu=1.1, step=iters)
+              #self.sample(sess, mu=100, step=iters)
+            if iters % 10000 == 0:
+              checkpoint_path = os.path.join(self.train_dir, 'model.ckpt')
+              saver.save(sess, checkpoint_path, global_step=iters)
+>>>>>>> 31ebb0d284f59194e0eb47208f1e2ab21834dfe1
     except tf.errors.OutOfRangeError:
       checkpoint_path = os.path.join(self.train_dir, 'model.ckpt')
       saver.save(sess, checkpoint_path)

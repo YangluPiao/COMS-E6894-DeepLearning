@@ -19,15 +19,15 @@ First, download data [celebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)
 
 Then, create image_list file:
 
-	$ python /create_img_lists.py --dataset=data/celebA --outfile=data/train.txt
+	$ python create_img_lists.py --dataset=data/celebA --outfile=data/train.txt
 
 To train model on gpu:
 
-	$ python /train.py
-	(or $ python tools/train.py --device_id=0)
+	$ python train.py
+	(or $ python train.py --device_id=0)
 
 To train model on cpu:
-	$ python /train.py --use_gpu=False
+	$ python train.py --use_gpu=False
 
 ## Author
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/242027.png
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/448004.png
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/95101.png
@@ -32641,3 +32642,20 @@
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/126032.png
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/267013.png
 /home/pyl/Desktop/my-project-repo/pixel/data/celebA/34076.png
+=======
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00000.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00001.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00002.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00003.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00004.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00005.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00006.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00007.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00008.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00009.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00010.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00011.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00012.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00013.png
+/Users/piaoyanglu/Desktop/COMS-E6894-DeepLearning/pixel/data/celebA/00014.png
+>>>>>>> 31ebb0d284f59194e0eb47208f1e2ab21834dfe1
