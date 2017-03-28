@@ -26,7 +26,7 @@ class Net(object):
     Args:[-0.5, 0.5]
       hr_images: [batch_size, hr_height, hr_width, in_channels]
     Returns:
-      prior_logits: [batch_size, hr_height, hr_width, 3*256]
+      prior_logits: [batch_size, hr_height, hr_width, 4*256]
     """
     with tf.variable_scope('prior') as scope:
       conv1 = conv2d(hr_images, 64, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
@@ -36,9 +36,8 @@ class Net(object):
         inputs, state = gated_conv2d(inputs, state, [5, 5], scope='gated' + str(i))
       conv2 = conv2d(inputs, 1024, [1, 1], strides=[1, 1], mask_type='B', scope="conv2")
       conv2 = tf.nn.relu(conv2)
-      prior_logits = conv2d(conv2, 3 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
-
-      prior_logits = tf.concat([prior_logits[:, :, :, 0::3], prior_logits[:, :, :, 1::3], prior_logits[:, :, :, 2::3]], 3)
+      prior_logits = conv2d(conv2, 4 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
+      prior_logits = tf.concat([prior_logits[:, :, :, 0::4], prior_logits[:, :, :, 1::4], prior_logits[:, :, :, 2::4],prior_logits[:, :, :, 3::4]], 3)
 
       return prior_logits
 
@@ -48,7 +47,7 @@ class Net(object):
     Args:[-0.5, 0.5]
       lr_images: [batch_size, lr_height, lr_width, in_channels]
     Returns:
-      conditioning_logits: [batch_size, hr_height, hr_width, 3*256]
+      conditioning_logits: [batch_size, hr_height, hr_width, 4*256]
     """
     res_num = 6
     with tf.variable_scope('conditioning') as scope:
@@ -61,7 +60,7 @@ class Net(object):
         inputs = tf.nn.relu(inputs)
       for i in range(res_num):
         inputs = resnet_block(inputs, 32, [3, 3], strides=[1, 1], scope='res3' + str(i), train=self.train)
-      conditioning_logits = conv2d(inputs, 3*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv")
+      conditioning_logits = conv2d(inputs, 4*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv")
 
       return conditioning_logits
 
@@ -69,8 +68,7 @@ class Net(object):
     logits = tf.reshape(logits, [-1, 256])
     labels = tf.cast(labels, tf.int32)
     labels = tf.reshape(labels, [-1])
-    return tf.losses.sparse_softmax_cross_entropy(
-           labels, logits)
+    return tf.losses.sparse_softmax_cross_entropy(labels, logits)
   def construct_net(self, hr_images, lr_images):
     """
     Args: [0, 255]

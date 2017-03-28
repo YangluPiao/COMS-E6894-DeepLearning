@@ -16,12 +16,12 @@ class DataSet(object):
     for line in input_file:
       line = line.strip()
       self.record_list.append(line)
-    filename_queue = tf.train.string_input_producer(self.record_list,num_epochs=num_epoch)
+    filename_queue = tf.train.string_input_producer(self.record_list,num_epochs=num_epoch,shuffle=False)
     image_reader = tf.WholeFileReader()
     _, image_file = image_reader.read(filename_queue)
     
     # image_file = tf.placeholder(dtype=tf.string)
-    image = tf.image.decode_png(image_file, 3)
+    image = tf.image.decode_png(image_file, 4)
     #preprocess
     hr_image = tf.image.resize_images(image, [sz_hr, sz_hr])
     lr_image = tf.image.resize_images(image, [sz_lr, sz_lr])
