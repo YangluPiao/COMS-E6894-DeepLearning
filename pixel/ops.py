@@ -5,7 +5,7 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 
-def conv2d(inputs, num_outputs, kernel_shape, strides=[1, 1], mask_type=None, scope="conv2d"):
+def conv2d(inputs, num_outputs, kernel_shape, strides=[1, 1], mask_type=None, scope="conv2d",name=None):
   """
   Args:
     inputs: nhwc
@@ -60,7 +60,7 @@ def conv2d(inputs, num_outputs, kernel_shape, strides=[1, 1], mask_type=None, sc
           tf.float32, tf.constant_initializer(0.0))
 
     outputs = tf.nn.conv2d(inputs, weights, [1, stride_h, stride_w, 1], padding="SAME")
-    outputs = tf.nn.bias_add(outputs, biases)
+    outputs = tf.nn.bias_add(outputs, biases,name=name)
 
     return outputs
 

@@ -6,18 +6,15 @@ import tensorflow as tf
 import numpy as np
 from ops import *
 
-flags = tf.app.flags
-conf = flags.FLAGS
-sz_hr = 32
-sz_lr= 8
 
 class Net(object):
-  def __init__(self, hr_images, lr_images, scope):
+  def __init__(self, hr_images, lr_images, scope,sz_hr,sz_lr):
     """
     Args:[0, 255]
       hr_images: [batch_size, hr_height, hr_width, in_channels] float32
       lr_images: [batch_size, lr_height, lr_width, in_channels] float32
     """
+    self.sz_hr=sz_hr
     with tf.variable_scope(scope) as scope:
       self.train = tf.placeholder(tf.bool, name="netTrainBool")
       self.construct_net(hr_images, lr_images)
@@ -29,16 +26,17 @@ class Net(object):
       prior_logits: [batch_size, hr_height, hr_width, 4*256]
     """
     with tf.variable_scope('prior') as scope:
-      conv1 = conv2d(hr_images, 64, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
+      conv1 = conv2d(hr_images, self.sz_hr*2, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
       inputs = conv1
       state = conv1
       for i in range(20):
         inputs, state = gated_conv2d(inputs, state, [5, 5], scope='gated' + str(i))
       conv2 = conv2d(inputs, 1024, [1, 1], strides=[1, 1], mask_type='B', scope="conv2")
       conv2 = tf.nn.relu(conv2)
-      prior_logits = conv2d(conv2, 4 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
-      prior_logits = tf.concat([prior_logits[:, :, :, 0::4], prior_logits[:, :, :, 1::4], prior_logits[:, :, :, 2::4],prior_logits[:, :, :, 3::4]], 3)
+      prior_logits = conv2d(conv2, 3 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
 
+      prior_logits = tf.concat([prior_logits[:, :, :, 0::3], prior_logits[:, :, :, 1::3], prior_logits[:, :, :, 2::3]], 3)
+      
       return prior_logits
 
 
@@ -52,23 +50,24 @@ class Net(object):
     res_num = 6
     with tf.variable_scope('conditioning') as scope:
       inputs = lr_images
-      inputs = conv2d(inputs, 32, [1, 1], strides=[1, 1], mask_type=None, scope="conv_init")
+      inputs = conv2d(inputs, self.sz_hr, [1, 1], strides=[1, 1], mask_type=None, scope="conv_init")
       for i in range(2):
         for j in range(res_num):
-          inputs = resnet_block(inputs, 32, [3, 3], strides=[1, 1], scope='res' + str(i) + str(j), train=self.train)
-        inputs = deconv2d(inputs, 32, [3, 3], strides=[2, 2], scope="deconv" + str(i))
+          inputs = resnet_block(inputs, self.sz_hr, [3, 3], strides=[1, 1], scope='res' + str(i) + str(j), train=self.train)
+        inputs = deconv2d(inputs, self.sz_hr, [3, 3], strides=[2, 2], scope="deconv" + str(i))
         inputs = tf.nn.relu(inputs)
       for i in range(res_num):
-        inputs = resnet_block(inputs, 32, [3, 3], strides=[1, 1], scope='res3' + str(i), train=self.train)
-      conditioning_logits = conv2d(inputs, 4*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv")
-
+        inputs = resnet_block(inputs, self.sz_hr, [3, 3], strides=[1, 1], scope='res3' + str(i), train=self.train)
+      conditioning_logits = conv2d(inputs, 3*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv")
+      
       return conditioning_logits
 
   def softmax_loss(self, logits, labels):
     logits = tf.reshape(logits, [-1, 256])
     labels = tf.cast(labels, tf.int32)
     labels = tf.reshape(labels, [-1])
-    return tf.losses.sparse_softmax_cross_entropy(labels, logits)
+    return tf.losses.sparse_softmax_cross_entropy(
+           labels, logits)
   def construct_net(self, hr_images, lr_images):
     """
     Args: [0, 255]
