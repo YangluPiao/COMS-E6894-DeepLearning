@@ -32,7 +32,7 @@ def save_samples(np_imgs, img_path):
   num = int(N ** (0.5))+1
   merge_img = np.zeros((H, W, 3), dtype=np.uint8)
   print(np.shape(merge_img))
-  gif_duration=32
+  gif_duration=30
   for i in range(num):
     for j in range(num):
       frame=i*num+j

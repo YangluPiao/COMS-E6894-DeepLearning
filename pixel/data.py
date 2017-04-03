@@ -21,7 +21,7 @@ class DataSet(object):
     _, image_file = image_reader.read(filename_queue)
     
     # image_file = tf.placeholder(dtype=tf.string)
-    image = tf.image.decode_png(image_file, 3)
+    image = tf.image.decode_jpeg(image_file, 3)
     #preprocess
     hr_image = tf.image.resize_images(image, [sz_hr, sz_hr])
     lr_image = tf.image.resize_images(image, [sz_lr, sz_lr])
