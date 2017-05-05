@@ -29,26 +29,8 @@ def conv2d(inputs, num_outputs, kernel_shape, strides=[1, 1], mask_type=None, sc
       mask[:center_h, :, :, :] = 1
       if mask_type == 'A':
         mask[center_h, :center_w, :, :] = 1
-        """
-        mask[center_h, :center_w, :, :] = 1
-        #G channel
-        mask[center_h, center_w, 0:in_channel:3, 1:num_outputs:3] = 1
-        #B Channel
-        mask[center_h, center_w, 0:in_channel:3, 2:num_outputs:3] = 1
-        mask[center_h, center_w, 1:in_channel:3, 2:num_outputs:3] = 1
-        """
       if mask_type == 'B':
         mask[center_h, :center_w+1, :, :] = 1
-        """
-        mask[center_h, :center_w, :, :] = 1
-        #R Channel
-        mask[center_h, center_w, 0:in_channel:3, 0:num_outputs:3] = 1
-        #G channel
-        mask[center_h, center_w, 0:in_channel:3, 1:num_outputs:3] = 1
-        mask[center_h, center_w, 1:in_channel:3, 1:num_outputs:3] = 1
-        #B Channel
-        mask[center_h, center_w, :, 2:num_outputs:3] = 1
-        """
     else:
       mask[:, :, :, :] = 1
 
@@ -56,13 +38,70 @@ def conv2d(inputs, num_outputs, kernel_shape, strides=[1, 1], mask_type=None, sc
     weights = tf.get_variable("weights", weights_shape,
       tf.float32, tf.truncated_normal_initializer(stddev=0.1))
     weights = weights * mask
+    #weights = tf.nn.l2_normalize(weights,[0,1,3])
     biases = tf.get_variable("biases", [num_outputs],
           tf.float32, tf.constant_initializer(0.0))
 
     outputs = tf.nn.conv2d(inputs, weights, [1, stride_h, stride_w, 1], padding="SAME")
-    outputs = tf.nn.bias_add(outputs, biases,name=name)
+    outputs = tf.nn.bias_add(outputs, biases)
 
     return outputs
+# def get_weights(shape, name, mask=None):
+#     weights_initializer = tf.contrib.layers.xavier_initializer()
+#     W = tf.get_variable(name, shape, tf.float32, weights_initializer)
+
+#     '''
+#         Use of masking to hide subsequent pixel values 
+#     '''
+#     if mask:
+#         filter_mid_x = shape[0]//2
+#         filter_mid_y = shape[1]//2
+#         mask_filter = np.ones(shape, dtype=np.float32)
+#         mask_filter[filter_mid_x, filter_mid_y+1:, :, :] = 0.
+#         mask_filter[filter_mid_x+1:, :, :, :] = 0.
+
+#         if mask == 'a':
+#             mask_filter[filter_mid_x, filter_mid_y, :, :] = 0.
+            
+#         W *= mask_filter 
+#     return W
+
+# def conv_op(x, W):
+#     return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')
+# def Gated_layer(inputs,kernel_shape,scope,mask,features,conditional=None,gated=True,payload=None):
+#   with tf.variable_scope(scope) as scope:
+#     batch_size, height, width, in_channel = inputs.get_shape().as_list()
+#     kernel_h, kernel_w = kernel_shape
+    
+#     W_f = get_weights([kernel_h, kernel_w,in_channel,features], "v_W", mask=mask)
+#     W_g = get_weights([kernel_h, kernel_w,in_channel,features], "h_W", mask=mask)
+#     if gated:
+#       # conv_f=conv2d(inputs,features,kernel_shape,strides=[1,1],mask_type='B',scope='conv_f')
+#       # conv_g=conv2d(inputs,features,kernel_shape,strides=[1,1],mask_type='B',scope='conv_g')
+#       if conditional is not None:
+#         h_shape = int(conditional.get_shape()[1])
+#         V_f = get_weights([h_shape, 32,32,256,features], "v_V")
+#         b_f = tf.matmul(conditional, V_f)
+#         V_g = get_weights([h_shape, 32,32,256,features], "h_V")
+#         b_g = tf.matmul(conditional, V_g)
+
+#         b_f_shape = tf.shape(b_f)
+#         b_f = tf.reshape(b_f, (b_f_shape[0], 1, 1, b_f_shape[1]))
+#         b_g_shape = tf.shape(b_g)
+#         b_g = tf.reshape(b_g, (b_g_shape[0], 1, 1, b_g_shape[1]))
+#       else:
+#         b_f = get_bias(features, "v_b")
+#         b_g = get_bias(features, "h_b")
+#       conv_f = conv_op(inputs, W_f)
+#       conv_g = conv_op(inputs, W_g)
+#       if payload is not None:
+#         conv_f+=payload
+#         conv_g+=payload
+#       outputs=tf.multiply(tf.tanh(conv_f + b_f), tf.sigmoid(conv_g + b_g))
+#     else:
+#       outputs=conv2d(inputs,in_channel,kernel_shape,strides=[1,1],mask_type=mask,scope='normal')
+
+#     return outputs
 
 def gated_conv2d(inputs, state, kernel_shape, scope):
   """

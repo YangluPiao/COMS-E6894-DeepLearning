@@ -15,6 +15,7 @@ class Net(object):
       lr_images: [batch_size, lr_height, lr_width, in_channels] float32
     """
     self.sz_hr=sz_hr
+
     with tf.variable_scope(scope) as scope:
       self.train = tf.placeholder(tf.bool, name="netTrainBool")
       self.construct_net(hr_images, lr_images)
@@ -25,8 +26,38 @@ class Net(object):
     Returns:
       prior_logits: [batch_size, hr_height, hr_width, 4*256]
     """
+    # inputs=conv2d(hr_images, 64, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
+    # v_stack_in, h_stack_in=inputs,inputs
+    # self.h=tf.one_hot(tf.cast(hr_images,tf.int32),256)
+    # hr_images = hr_images / 255.0 - 0.5
+    # with tf.variable_scope('prior') as scope:
+    #   for i in range(20):
+    #     filter_size = 5
+    #     mask = 'B' 
+    #     residual = True 
+    #     i = str(i)
+    #     v_stack = Gated_layer(kernel_shape=[filter_size, filter_size], inputs=v_stack_in, features=64,mask=mask,scope="v_stack_"+str(i),conditional=self.h)
+    #     v_stack_in = v_stack
+
+    #     v_stack_1 = Gated_layer(kernel_shape=[1, 1], inputs=v_stack_in,features=64,mask=mask,gated=False,scope="v_stack_1_"+str(i))
+
+    #     h_stack = Gated_layer(kernel_shape=[1, filter_size], inputs=h_stack_in, features=64, payload=v_stack_1,mask=mask,scope="h_stack_"+str(i),conditional=self.h)
+
+    #     h_stack_1 = Gated_layer(kernel_shape=[1, 1], inputs=h_stack, features=64, mask=mask,gated=False,scope="h_stack_1_"+str(i))
+    #     if residual:
+    #       h_stack_1 += h_stack_in # Residual connection
+    #     h_stack_in = h_stack_1
+    #   conv2 = conv2d(h_stack_in, 1024, [1, 1], strides=[1, 1], mask_type='B', scope="conv2")
+    #   conv2 = tf.nn.relu(conv2)
+    #   prior_logits = conv2d(conv2, 3 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
+    #   prior_logits=tf.nn.dropout(prior_logits,0.5)
+    #   prior_logits = tf.concat([prior_logits[:, :, :, 0::3], prior_logits[:, :, :, 1::3], prior_logits[:, :, :, 2::3]], 3)
+      
+    #   return prior_logits
+    
+    
     with tf.variable_scope('prior') as scope:
-      conv1 = conv2d(hr_images, self.sz_hr*2, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
+      conv1 = conv2d(hr_images, 64, [7, 7], strides=[1, 1], mask_type='A', scope="conv1")
       inputs = conv1
       state = conv1
       for i in range(20):
@@ -36,7 +67,7 @@ class Net(object):
       prior_logits = conv2d(conv2, 3 * 256, [1, 1], strides=[1, 1], mask_type='B', scope="conv3")
 
       prior_logits = tf.concat([prior_logits[:, :, :, 0::3], prior_logits[:, :, :, 1::3], prior_logits[:, :, :, 2::3]], 3)
-      
+      #prior_logits=tf.nn.dropout(prior_logits,0.5)
       return prior_logits
 
 
@@ -58,8 +89,8 @@ class Net(object):
         inputs = tf.nn.relu(inputs)
       for i in range(res_num):
         inputs = resnet_block(inputs, self.sz_hr, [3, 3], strides=[1, 1], scope='res3' + str(i), train=self.train)
-      conditioning_logits = conv2d(inputs, 3*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv")
-      
+      conditioning_logits = conv2d(inputs, 3*256, [1, 1], strides=[1, 1], mask_type=None, scope="conv",name="c_logits")
+      #conditioning_logits = tf.nn.dropout(conditioning_logits,0.5)
       return conditioning_logits
 
   def softmax_loss(self, logits, labels):
@@ -76,14 +107,20 @@ class Net(object):
     labels = hr_images
     #normalization images [-0.5, 0.5]
     hr_images = hr_images / 255.0 - 0.5
-    lr_images = lr_images / 255.0 - 0.5
     self.prior_logits = self.prior_network(hr_images)
+    lr_images = lr_images / 255.0 - 0.5
     self.conditioning_logits = self.conditioning_network(lr_images)
+
+    # log1=tf.reduce_logsumexp(self.prior_logits+self.conditioning_logits)
+    # log2=tf.reduce_logsumexp(self.prior_logits)
 
     loss1 = self.softmax_loss(self.prior_logits + self.conditioning_logits, labels)
     loss2 = self.softmax_loss(self.conditioning_logits, labels)
     loss3 = self.softmax_loss(self.prior_logits, labels)
 
-    self.loss = loss1 + loss2
+    # loss=self.softmax_loss(2*self.prior_logits + self.conditioning_logits,labels)
+
+    self.loss = loss1+loss2
+    # self.loss=loss3
     tf.summary.scalar('loss', self.loss)
     tf.summary.scalar('loss_prior', loss3)

@@ -10,9 +10,9 @@ def file_len(fname):
             pass
     return i + 1
 #solver
-data_file="data/train.txt"
-flags.DEFINE_string("train_dir", "models", "trained model save path")
-flags.DEFINE_string("samples_dir", "samples", "sampled images save path")
+data_file="data/train_full.txt"
+flags.DEFINE_string("train_dir", "04-27_models", "trained model save path")
+flags.DEFINE_string("samples_dir", "04-27_samples", "sampled images save path")
 flags.DEFINE_string("imgs_list_path", data_file , "images list file path")
 
 flags.DEFINE_boolean("use_gpu", True, "whether to use gpu for training")

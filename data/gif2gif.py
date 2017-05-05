@@ -27,7 +27,7 @@ def parse_args():
 	Handles input of tag/folder name on command line
 	"""
 	parser = argparse.ArgumentParser(description="Generate pngs-gifs")
-	parser.add_argument('tag', nargs='+', help="Tags of GIFs to convert to PNG")
+	parser.add_argument('tag', nargs='+', help="Tags of GIFs to convert to JPG")
 	return parser.parse_args()
 
 def gif2images(tag,split_path,gif_path):
@@ -44,7 +44,8 @@ def gif2images(tag,split_path,gif_path):
 	for idx, gif in enumerate(gif_path):
 		print("Splitting %d.gif with tag '%s'"%(idx,tag))
 		# May need to modify the path.
-		call(["convert","-coalesce",gif_path[idx],"gifs/"+tag+"/"+str(idx)+"/%05d.png"])
+		# call(["convert","-coalesce",gif_path[idx],"gifs/"+tag+"/"+str(idx)+"/%05d.jpg"])
+		call(["convert","-coalesce",gif_path[idx],"../pixel/sample_images/funny-face/"+str(idx)+"-"+"%03d.jpg"])
 	print "Done with splitting."
 
 def images2gif(tag,recovered_path,gif_path):
@@ -66,12 +67,12 @@ def images2gif(tag,recovered_path,gif_path):
 	for i in range(len(gif_path)):
 		print("Recovering %d.gif"%(i))
 		png_path=split_path+str(i)+"/"
-		pngList=glob.glob(png_path+"*.png")
+		pngList=glob.glob(png_path+"*.jpg")
 		frames = len(pngList)
 		original_gif=Image.open(gif_path[i])
 		delay = original_gif.info['duration']/10.0
 		# May need to modify the paths.
-		call(["convert","-delay",str(delay),"-loop","0",png_path+"/000*.png",recovered_path+"/"+str(i)+".gif"])
+		call(["convert","-delay",str(delay),"-loop","0",png_path+"/000*.jpg",recovered_path+"/"+str(i)+".gif"])
 	print "Done with recovering."
 
 if __name__ == '__main__':
@@ -79,4 +80,4 @@ if __name__ == '__main__':
 	tag = args.tag[0]
 	recovered_path, split_path, gif_path = initConversion(tag)
 	gif2images(tag,split_path,gif_path)
-	images2gif(tag,recovered_path,gif_path)
+	#images2gif(tag,recovered_path,gif_path)
